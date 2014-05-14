@@ -35,6 +35,7 @@ func Highlight(code string, lexer string, format string, options Options) (strin
 		if value != "" {
 			optionsString += "=" + value
 		}
+		optionsString += ","
 	}
 	strings.TrimSuffix(optionsString, ",")
 
