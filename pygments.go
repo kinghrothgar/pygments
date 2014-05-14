@@ -4,10 +4,9 @@ package pygments
 
 import (
 	"bytes"
-	"fmt"
-	"os"
 	"os/exec"
 	"strings"
+	"errors"
 )
 
 var (
@@ -22,14 +21,27 @@ func Which() string {
 	return bin
 }
 
-func Highlight(code string, lexer string, format string, enc string) string {
+func Highlight(code string, lexer string, format string, options map[string]string) (string, error) {
 
 	if _, err := exec.LookPath(bin); err != nil {
-		fmt.Println("You do not have " + bin + " installed!")
-		os.Exit(0)
+		return "", errors.New("Could not find '"+bin+"'")
 	}
 
-	cmd := exec.Command(bin, "-l"+lexer, "-f"+format, "-O encoding="+enc)
+	optionsString := ""
+	for name, value := range options  {
+		optionsString += name
+		if value != "" {
+			optionsString += "=" + value
+		}
+	}
+	strings.TrimSuffix(optionsString, ",")
+
+	var cmd *exec.Cmd
+	if len(optionsString) > 0 {
+		cmd = exec.Command(bin, "-l"+lexer, "-f"+format, "-O "+optionsString)
+	} else {
+		cmd = exec.Command(bin, "-l"+lexer, "-f"+format)
+	}
 	cmd.Stdin = strings.NewReader(code)
 
 	var out bytes.Buffer
@@ -39,10 +51,8 @@ func Highlight(code string, lexer string, format string, enc string) string {
 	cmd.Stderr = &stderr
 
 	if err := cmd.Run(); err != nil {
-		fmt.Println(stderr.String())
-		fmt.Println(err)
-		os.Exit(0)
+		return "", errors.New("Failed to run highlight command with error: "+err.Error())
 	}
 
-	return out.String()
+	return out.String(), nil
 }
