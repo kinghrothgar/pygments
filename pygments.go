@@ -9,6 +9,8 @@ import (
 	"errors"
 )
 
+type Options map[string]string
+
 var (
 	bin = "pygmentize"
 )
@@ -21,7 +23,7 @@ func Which() string {
 	return bin
 }
 
-func Highlight(code string, lexer string, format string, options map[string]string) (string, error) {
+func Highlight(code string, lexer string, format string, options Options) (string, error) {
 
 	if _, err := exec.LookPath(bin); err != nil {
 		return "", errors.New("Could not find '"+bin+"'")
