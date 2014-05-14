@@ -54,7 +54,8 @@ func Highlight(code string, lexer string, format string, options Options) (strin
 	cmd.Stderr = &stderr
 
 	if err := cmd.Run(); err != nil {
-		return "", errors.New("Failed to run highlight command with error: "+err.Error())
+		commandStr := bin + " -l"+lexer+" -f"+format+" -O "+optionsStr
+		return "", errors.New("Failed to run highlight command '"+commandStr+"' with error: "+err.Error())
 	}
 
 	return out.String(), nil
