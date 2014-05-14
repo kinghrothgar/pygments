@@ -29,19 +29,19 @@ func Highlight(code string, lexer string, format string, options Options) (strin
 		return "", errors.New("Could not find '"+bin+"'")
 	}
 
-	optionsString := ""
+	optionsStr := ""
 	for name, value := range options  {
-		optionsString += name
+		optionsStr += name
 		if value != "" {
-			optionsString += "=" + value
+			optionsStr += "=" + value
 		}
-		optionsString += ","
+		optionsStr += ","
 	}
-	strings.TrimSuffix(optionsString, ",")
+	optionsStr = strings.TrimSuffix(optionsStr, ",")
 
 	var cmd *exec.Cmd
-	if len(optionsString) > 0 {
-		cmd = exec.Command(bin, "-l"+lexer, "-f"+format, "-O "+optionsString)
+	if len(optionsStr) > 0 {
+		cmd = exec.Command(bin, "-l"+lexer, "-f"+format, "-O "+optionsStr)
 	} else {
 		cmd = exec.Command(bin, "-l"+lexer, "-f"+format)
 	}
